@@ -27,8 +27,8 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    @GetMapping("/{username}")
-    public User getUserByUsername(@PathVariable String username) {
-        return userRepository.findByUsername(username);
+    @GetMapping("/{mobileNo}")
+    public User getUserByMobileNo(@PathVariable String mobileNo) {
+        return userRepository.findByMobileNo(mobileNo);
     }
 }
