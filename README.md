@@ -56,6 +56,7 @@ quickchat/
 - User presence status (online/offline)
 - Message read receipts
 - Deployment to cloud infrastructure
+- AI addition
 
 ## License
 This project is yet to be licensed.
