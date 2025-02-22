@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping("/add")
     public String createUser(@RequestBody User user) {
-        return userService.addUser(user);
+        return userService.registerUser(user);
     }
 
     @GetMapping
