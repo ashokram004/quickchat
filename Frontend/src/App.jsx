@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// Default human icon URL
+const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
 const users = [
-  { id: 1, name: "John Doe", avatar: "https://via.placeholder.com/50" },
-  { id: 2, name: "Jane Smith", avatar: "https://via.placeholder.com/50" },
-  { id: 3, name: "Alice Brown", avatar: "https://via.placeholder.com/50" },
+  { id: 1, name: "John Doe", avatar: DEFAULT_PROFILE_PICTURE },
+  { id: 2, name: "Jane Smith", avatar: DEFAULT_PROFILE_PICTURE },
+  { id: 3, name: "Alice Brown", avatar: DEFAULT_PROFILE_PICTURE },
 ];
 
 const messages = {
@@ -79,13 +82,6 @@ const themes = {
     buttonColor: "bg-purple-600 hover:bg-purple-700",
     focusRing: "focus:ring-purple-500/50",
   },
-  teal: {
-    gradient: "from-teal-900 via-cyan-800 to-emerald-900",
-    accent: "teal",
-    messageColor: "bg-teal-600",
-    buttonColor: "bg-teal-600 hover:bg-teal-700",
-    focusRing: "focus:ring-teal-500/50",
-  },
   lime: {
     gradient: "from-lime-900 via-green-800 to-emerald-900",
     accent: "lime",
@@ -105,17 +101,20 @@ const themes = {
 export default function Home() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [theme, setTheme] = useState("green"); // Default theme is green
+  const [theme, setTheme] = useState("cyan"); // Default theme is green
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle settings sidebar
   const [name, setName] = useState("Your Profile"); // Editable name
   const [bio, setBio] = useState("Hey there! I'm using this app."); // Editable bio
   const [tempName, setTempName] = useState(name); // Temporary name for editing
   const [tempBio, setTempBio] = useState(bio); // Temporary bio for editing
   const [tempTheme, setTempTheme] = useState(theme); // Temporary theme for editing
+  const [profilePicture, setProfilePicture] = useState(DEFAULT_PROFILE_PICTURE); // Default profile picture
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Toggle theme dropdown
 
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedUser) return;
-    messages[selectedUser.id].push({ sender: "You", text: newMessage });
+    const newMsg = { sender: "You", text: newMessage };
+    messages[selectedUser.id].push(newMsg);
     setNewMessage("");
   };
 
@@ -126,16 +125,35 @@ export default function Home() {
     setIsSettingsOpen(false); // Close settings sidebar
   };
 
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result); // Set the uploaded image as profile picture
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const selectedThemeConfig = themes[theme];
+
+  // Smooth animations for messages
+  useEffect(() => {
+    const chatContainer = document.getElementById("chat-messages");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [selectedUser, messages]);
 
   return (
     <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedThemeConfig.gradient} animate-gradient`}>
-      <div className="flex h-[90%] w-[80%] bg-gray-900/30 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden border border-gray-800/50">
+      <div className="flex h-[90%] w-[90%] md:w-[80%] bg-gray-900/30 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden border border-gray-800/50">
         {/* Sidebar */}
         <div className="w-1/3 bg-gray-900/20 p-4 border-r border-gray-800/50 flex flex-col relative">
           {/* Settings Sidebar */}
           {isSettingsOpen ? (
-            <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-lg p-4 flex flex-col gap-4 animate-slide-in">
+            <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-lg p-4 flex flex-col gap-4 animate-jelly">
               {/* Close Button */}
               <button
                 className="self-end text-gray-400 hover:text-gray-100 transition-all"
@@ -146,11 +164,20 @@ export default function Home() {
 
               {/* Profile Picture */}
               <div className="flex justify-center">
-                <img
-                  src="https://via.placeholder.com/50"
-                  alt="Profile"
-                  className="rounded-full w-20 h-20 border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
-                />
+                <label htmlFor="profile-picture" className="cursor-pointer">
+                  <img
+                    src={profilePicture}
+                    alt="Profile"
+                    className="rounded-full w-20 h-20 border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
+                  />
+                  <input
+                    type="file"
+                    id="profile-picture"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleProfilePictureChange}
+                  />
+                </label>
               </div>
 
               {/* Name Edit */}
@@ -178,17 +205,32 @@ export default function Home() {
               {/* Theme Dropdown */}
               <div>
                 <label className="text-gray-100 text-sm font-semibold">Theme:</label>
-                <select
-                  value={tempTheme}
-                  onChange={(e) => setTempTheme(e.target.value)}
-                  className="w-full p-2 rounded-lg border border-gray-700/50 bg-gray-700/20 text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/50 appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2hldnJvbi1kb3duIiB2aWV3Qm94PSIwIDAgMTYgMTYiPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEuNjQ2IDQuNjQ2YS41LjUgMCAwIDEgLjcwOCAwTDggMTAuMjkzbDUuNjQ2LTUuNjQ3YS41LjUgMCAwIDEgLjcwOC43MDhsLTYgNmEuNS41IDAgMCAxLS43MDggMGwtNi02YS41LjUgMCAwIDEgMC0uNzA4eiIvPjwvc3ZnPg==')] bg-no-repeat bg-[right_0.5rem_center] bg-[length:1.5rem]"
-                >
-                  {Object.keys(themes).map((themeKey) => (
-                    <option key={themeKey} value={themeKey}>
-                      {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <button
+                    className="w-full p-2 rounded-lg border border-gray-700/50 bg-gray-700/20 text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/50 text-left"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    {tempTheme.charAt(0).toUpperCase() + tempTheme.slice(1)}
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute w-full mt-1 rounded-lg border border-gray-700/50 bg-gray-800/50 backdrop-blur-lg">
+                      {Object.keys(themes).map((themeKey) => (
+                        <div
+                          key={themeKey}
+                          className={`p-2 cursor-pointer hover:bg-gray-700/50 text-gray-100 transition-all ${
+                            tempTheme === themeKey ? "bg-gray-700/50" : ""
+                          }`}
+                          onClick={() => {
+                            setTempTheme(themeKey);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Apply Button */}
@@ -204,7 +246,7 @@ export default function Home() {
               {/* Profile & Settings */}
               <div className="flex items-center gap-3 mb-4">
                 <img
-                  src="https://via.placeholder.com/50"
+                  src={profilePicture}
                   alt="Profile"
                   className="rounded-full w-12 h-12 cursor-pointer border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
                   onClick={() => setIsSettingsOpen(true)}
@@ -257,11 +299,11 @@ export default function Home() {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800/50 scrollbar-track-transparent">
+              <div id="chat-messages" className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800/50 scrollbar-track-transparent">
                 {messages[selectedUser.id]?.map((msg, index) => (
                   <div
                     key={index}
-                    className={`p-3 my-2 w-fit max-w-xs rounded-lg ${
+                    className={`p-3 my-2 w-fit max-w-xs rounded-lg animate-message ${
                       msg.sender === "You"
                         ? `${selectedThemeConfig.messageColor} text-gray-100 self-end ml-auto`
                         : "bg-gray-800/40 text-gray-100"
