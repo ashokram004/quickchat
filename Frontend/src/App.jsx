@@ -99,6 +99,7 @@ const themes = {
 };
 
 export default function Home() {
+  
   const [selectedUser, setSelectedUser] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [theme, setTheme] = useState("cyan"); // Default theme is green
