@@ -12,5 +12,6 @@ public class User {
     private String mobileNo; // Unique identifier
     private String name;
     private String password;
+    private String theme;
     private List<ChatHistory> chatHistory; // Stores chat history with other users
 }

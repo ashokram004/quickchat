@@ -17,11 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/add")
-    public String createUser(@RequestBody User user) {
-        return userService.registerUser(user);
-    }
-
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -29,6 +24,17 @@ public class UserController {
 
     @GetMapping("/{mobileNo}")
     public User getUserByMobileNo(@PathVariable String mobileNo) {
+        System.out.println("Got request for fetching user details: "+mobileNo);
         return userRepository.findByMobileNo(mobileNo);
+    }
+
+    @PostMapping("/add")
+    public String createUser(@RequestBody User user) {
+        return userService.registerUser(user);
+    }
+
+    @PutMapping("/update/{mobileNo}")
+    public String updateUser(@PathVariable String mobileNo, @RequestBody User user) {
+        return userService.updateUser(mobileNo, user);
     }
 }

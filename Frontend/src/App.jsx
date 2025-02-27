@@ -1,130 +1,62 @@
-import { useState, useEffect } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect, useRef } from "react";
+import themesList from './themes'
+import { useDispatch, useSelector } from "react-redux";
+import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser } from './actions/action';
 
 // Default human icon URL
 const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-const users = [
-  { id: 1, name: "John Doe", avatar: DEFAULT_PROFILE_PICTURE },
-  { id: 2, name: "Jane Smith", avatar: DEFAULT_PROFILE_PICTURE },
-  { id: 3, name: "Alice Brown", avatar: DEFAULT_PROFILE_PICTURE },
-];
-
-const messages = {
-  1: [
-    { sender: "John Doe", text: "Hey! How's it going?" },
-    { sender: "You", text: "All good! How about you?" },
-  ],
-  2: [
-    { sender: "Jane Smith", text: "Hi there!" },
-    { sender: "You", text: "Hey! What's up?" },
-  ],
-  3: [
-    { sender: "Alice Brown", text: "Long time no see!" },
-    { sender: "You", text: "Yeah! How have you been?" },
-  ],
-};
-
 // Theme configuration
-const themes = {
-  green: {
-    gradient: "from-emerald-900 via-teal-800 to-green-900",
-    accent: "green",
-    messageColor: "bg-green-600",
-    buttonColor: "bg-green-600 hover:bg-green-700",
-    focusRing: "focus:ring-green-500/50",
-  },
-  red: {
-    gradient: "from-red-900 via-rose-800 to-pink-900",
-    accent: "red",
-    messageColor: "bg-red-600",
-    buttonColor: "bg-red-600 hover:bg-red-700",
-    focusRing: "focus:ring-red-500/50",
-  },
-  yellow: {
-    gradient: "from-amber-900 via-orange-800 to-yellow-900",
-    accent: "yellow",
-    messageColor: "bg-yellow-600",
-    buttonColor: "bg-yellow-600 hover:bg-yellow-700",
-    focusRing: "focus:ring-yellow-500/50",
-  },
-  blue: {
-    gradient: "from-indigo-900 via-blue-800 to-cyan-900",
-    accent: "blue",
-    messageColor: "bg-blue-600",
-    buttonColor: "bg-blue-600 hover:bg-blue-700",
-    focusRing: "focus:ring-blue-500/50",
-  },
-  orange: {
-    gradient: "from-orange-900 via-amber-800 to-yellow-900",
-    accent: "orange",
-    messageColor: "bg-orange-600",
-    buttonColor: "bg-orange-600 hover:bg-orange-700",
-    focusRing: "focus:ring-orange-500/50",
-  },
-  pink: {
-    gradient: "from-pink-900 via-rose-800 to-fuchsia-900",
-    accent: "pink",
-    messageColor: "bg-pink-600",
-    buttonColor: "bg-pink-600 hover:bg-pink-700",
-    focusRing: "focus:ring-pink-500/50",
-  },
-  gray: {
-    gradient: "from-gray-900 via-gray-800 to-gray-700",
-    accent: "gray",
-    messageColor: "bg-gray-600",
-    buttonColor: "bg-gray-600 hover:bg-gray-700",
-    focusRing: "focus:ring-gray-500/50",
-  },
-  purple: {
-    gradient: "from-purple-900 via-violet-800 to-indigo-900",
-    accent: "purple",
-    messageColor: "bg-purple-600",
-    buttonColor: "bg-purple-600 hover:bg-purple-700",
-    focusRing: "focus:ring-purple-500/50",
-  },
-  lime: {
-    gradient: "from-lime-900 via-green-800 to-emerald-900",
-    accent: "lime",
-    messageColor: "bg-lime-600",
-    buttonColor: "bg-lime-600 hover:bg-lime-700",
-    focusRing: "focus:ring-lime-500/50",
-  },
-  cyan: {
-    gradient: "from-cyan-900 via-sky-800 to-blue-900",
-    accent: "cyan",
-    messageColor: "bg-cyan-600",
-    buttonColor: "bg-cyan-600 hover:bg-cyan-700",
-    focusRing: "focus:ring-cyan-500/50",
-  },
-};
+const themes = themesList;
 
 export default function Home() {
   
+  const chat = useSelector((state) => state.chat);
+  const user = useSelector((state) => state.user);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [theme, setTheme] = useState("cyan"); // Default theme is green
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle settings sidebar
-  const [name, setName] = useState("Your Profile"); // Editable name
-  const [bio, setBio] = useState("Hey there! I'm using this app."); // Editable bio
-  const [tempName, setTempName] = useState(name); // Temporary name for editing
-  const [tempBio, setTempBio] = useState(bio); // Temporary bio for editing
-  const [tempTheme, setTempTheme] = useState(theme); // Temporary theme for editing
+  const [tempName, setTempName] = useState(user.name); // Temporary theme for editing
+  const [tempTheme, setTempTheme] = useState(user.theme); // Temporary theme for editing
   const [profilePicture, setProfilePicture] = useState(DEFAULT_PROFILE_PICTURE); // Default profile picture
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Toggle theme dropdown
+  const messagesEndRef = useRef(null);
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedUser) return;
-    const newMsg = { sender: "You", text: newMessage };
-    messages[selectedUser.id].push(newMsg);
-    setNewMessage("");
-  };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setUserState("9398413420"));
+  }, []);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chat.chatMessages]);
 
   const handleApplySettings = () => {
-    setName(tempName); // Save name
-    setBio(tempBio); // Save bio
-    setTheme(tempTheme); // Save theme
-    setIsSettingsOpen(false); // Close settings sidebar
+    dispatch(updateUserState({...user, name: tempName, theme: tempTheme}))
+    setIsSettingsOpen(false); 
   };
+
+  const handleSendMessage = () => {
+    const chatMessage = {sender: user.mobileNo, message: newMessage, timestamp: new Date().toISOString()}
+    dispatch(sendMessage(selectedUser.chatId, chatMessage, chat));
+    setNewMessage("")
+  };
+
+  const handleSelectUser = (chatId) => {
+    dispatch(setChatState(chatId));
+  };
+
+  const addTemporaryUserChat = (friendMobileNo) => {
+    const chatId = user['mobileNo']+"."+friendMobileNo
+    dispatch(addTempChatUser({chatId, friendMobileNo}))
+    setTimeout(() => {
+      handleSelectUser(chatId);
+    }, 0);
+  }
 
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
@@ -137,15 +69,7 @@ export default function Home() {
     }
   };
 
-  const selectedThemeConfig = themes[theme];
-
-  // Smooth animations for messages
-  useEffect(() => {
-    const chatContainer = document.getElementById("chat-messages");
-    if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-  }, [selectedUser, messages]);
+  const selectedThemeConfig = themes[user.theme];
 
   return (
     <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedThemeConfig.gradient} animate-gradient`}>
@@ -196,8 +120,7 @@ export default function Home() {
               <div>
                 <label className="text-gray-100 text-sm font-semibold">Bio:</label>
                 <textarea
-                  value={tempBio}
-                  onChange={(e) => setTempBio(e.target.value)}
+                  value='QuickChat User'
                   className="w-full p-2 rounded-lg border border-gray-700/50 bg-gray-700/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   rows={3}
                 />
@@ -252,7 +175,7 @@ export default function Home() {
                   className="rounded-full w-12 h-12 cursor-pointer border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
                   onClick={() => setIsSettingsOpen(true)}
                 />
-                <span className="font-semibold text-lg text-gray-100">{name}</span>
+                <span className="font-semibold text-lg text-gray-100">{user.name}</span>
               </div>
 
               {/* Search Bar */}
@@ -264,20 +187,20 @@ export default function Home() {
 
               {/* User List */}
               <div className="flex flex-col gap-2">
-                {users.map((user) => (
+                {user.chatHistory.map((friend) => (
                   <div
-                    key={user.id}
+                    key={friend.chatId}
                     className={`flex items-center p-2 cursor-pointer rounded-lg hover:bg-gray-800/30 transition-all ${
-                      selectedUser?.id === user.id ? "bg-gray-800/40" : ""
+                      selectedUser?.chatId === friend.chatId ? "bg-gray-800/40" : ""
                     }`}
-                    onClick={() => setSelectedUser(user)}
+                    onClick={() => {setSelectedUser(friend); handleSelectUser(friend.chatId)}}
                   >
                     <img
-                      src={user.avatar}
-                      alt={user.name}
+                      src={DEFAULT_PROFILE_PICTURE}
+                      alt={friend.friendMobileNo}
                       className="rounded-full w-10 h-10 mr-3 border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
                     />
-                    <span className="text-gray-100">{user.name}</span>
+                    <span className="text-gray-100">{friend.friendMobileNo}</span>
                   </div>
                 ))}
               </div>
@@ -292,27 +215,29 @@ export default function Home() {
               {/* Chat Header */}
               <div className="p-4 border-b border-gray-800/50 flex items-center gap-3 bg-gray-900/20">
                 <img
-                  src={selectedUser.avatar}
-                  alt={selectedUser.name}
+                  src={DEFAULT_PROFILE_PICTURE}
+                  alt={selectedUser.friendMobileNo}
                   className="rounded-full w-10 h-10 border-2 border-gray-700/50 hover:border-gray-600/80 transition-all"
                 />
-                <span className="font-semibold text-lg text-gray-100">{selectedUser.name}</span>
+                <span className="font-semibold text-lg text-gray-100">{selectedUser.friendMobileNo}</span>
               </div>
 
               {/* Chat Messages */}
-              <div id="chat-messages" className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800/50 scrollbar-track-transparent">
-                {messages[selectedUser.id]?.map((msg, index) => (
+              <div id="chat-messages" className="flex-1 p-4 overflow-y-auto hide-scrollbar">
+                {chat.chatMessages?.map((msg, index) => (
                   <div
                     key={index}
                     className={`p-3 my-2 w-fit max-w-xs rounded-lg animate-message ${
-                      msg.sender === "You"
+                      msg.sender === user.mobileNo
                         ? `${selectedThemeConfig.messageColor} text-gray-100 self-end ml-auto`
                         : "bg-gray-800/40 text-gray-100"
                     }`}
                   >
-                    <span>{msg.text}</span>
+                    <span>{msg.message}</span>
                   </div>
                 ))}
+                {/* Invisible div to ensure scrolling to bottom */}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}

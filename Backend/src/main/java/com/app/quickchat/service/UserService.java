@@ -34,4 +34,23 @@ public class UserService {
         }
         return "Invalid password!";
     }
+
+    @Transactional
+    public String updateUser(String mobileNo, User user){
+        User dbUser = userRepository.findByMobileNo(mobileNo);
+        if(dbUser != null){
+            if(user.getName() != null) {
+                dbUser.setName(user.getName());
+            }
+            if (user.getTheme() != null) {
+                dbUser.setTheme(user.getTheme());
+            }
+            if (user.getPassword() != null) {
+                dbUser.setPassword(user.getPassword());
+            }
+            userRepository.save(dbUser);
+            return "User updated successfully";
+        }
+        return "User not found. Bug Report! Shouldn't send update user request without registration.";
+    }
 }

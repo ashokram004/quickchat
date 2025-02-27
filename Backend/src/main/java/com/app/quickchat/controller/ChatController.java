@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/chats")
@@ -30,6 +31,12 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @GetMapping("/fetchMessages/{chatId}")
+    public Chat fetchMessages(@PathVariable String chatId) {
+        Optional<Chat> opChat = chatRepository.findById(chatId);
+        return opChat.orElse(null);
+    }
+
     @PostMapping("/initiateChat/{chatId}")
     public String initiateChat(@PathVariable String chatId) {
         chatService.initiateChat(chatId);
@@ -40,12 +47,5 @@ public class ChatController {
     public String sendMessage(@PathVariable String chatId, @RequestBody ChatMessage chatMessage) {
         chatService.sendMessage(chatId, chatMessage);
         return "Message sent";
-    }
-
-    @GetMapping("/fetchMessages/{chatId}")
-    public List<ChatMessage> fetchMessages(@PathVariable String chatId) {
-        return chatRepository.findById(chatId)
-                .map(Chat::getChatMessages) // Extract messages
-                .orElse(Collections.emptyList());
     }
 }
