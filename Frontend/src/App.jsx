@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import themesList from './themes'
 import { useDispatch, useSelector } from "react-redux";
-import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser } from './actions/action';
+import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser, logOut } from './actions/action';
+import { useNavigate } from "react-router";
 
 // Default human icon URL
 const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -10,11 +11,13 @@ const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/313
 // Theme configuration
 const themes = themesList;
 
-export default function Home() {
+export default function App() {
   
   const chat = useSelector((state) => state.chat);
   const user = useSelector((state) => state.user);
+  const isAuthenticated = useSelector((state) => state.isAuthenticated);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedTheme, setSelectedTheme] = useState(themes['cyan']);
   const [newMessage, setNewMessage] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Toggle settings sidebar
   const [tempName, setTempName] = useState(user.name); // Temporary theme for editing
@@ -24,16 +27,23 @@ export default function Home() {
   const messagesEndRef = useRef(null);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setUserState("9398413420"));
-  }, []);
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chat.chatMessages]);
+
+  useEffect(() => {
+    setSelectedTheme(themes[user.theme])
+  }, [user]);
 
   const handleApplySettings = () => {
     dispatch(updateUserState({...user, name: tempName, theme: tempTheme}))
@@ -50,8 +60,14 @@ export default function Home() {
     dispatch(setChatState(chatId));
   };
 
+  const handleLogOut = () => {
+    navigate("/");
+    dispatch(logOut());
+  }
+
   const addTemporaryUserChat = (friendMobileNo) => {
     const chatId = user['mobileNo']+"."+friendMobileNo
+    setSelectedUser({chatId, friendMobileNo})
     dispatch(addTempChatUser({chatId, friendMobileNo}))
     setTimeout(() => {
       handleSelectUser(chatId);
@@ -69,10 +85,8 @@ export default function Home() {
     }
   };
 
-  const selectedThemeConfig = themes[user.theme];
-
   return (
-    <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedThemeConfig.gradient} animate-gradient`}>
+    <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedTheme.gradient} animate-gradient`}>
       <div className="flex h-[90%] w-[90%] md:w-[80%] bg-gray-900/30 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden border border-gray-800/50">
         {/* Sidebar */}
         <div className="w-1/3 bg-gray-900/20 p-4 border-r border-gray-800/50 flex flex-col relative">
@@ -123,6 +137,7 @@ export default function Home() {
                   value='QuickChat User'
                   className="w-full p-2 rounded-lg border border-gray-700/50 bg-gray-700/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   rows={3}
+                  readOnly
                 />
               </div>
 
@@ -163,6 +178,16 @@ export default function Home() {
                 onClick={handleApplySettings}
               >
                 Apply
+              </button>
+
+              <div className="flex-grow"></div>
+
+              {/* Logout Button */}
+              <button
+                className="bg-red-700/50 px-4 py-2 rounded-lg hover:bg-red-600/50 text-white transition-all"
+                onClick={handleLogOut}
+              >
+                Logout
               </button>
             </div>
           ) : (
@@ -229,7 +254,7 @@ export default function Home() {
                     key={index}
                     className={`p-3 my-2 w-fit max-w-xs rounded-lg animate-message ${
                       msg.sender === user.mobileNo
-                        ? `${selectedThemeConfig.messageColor} text-gray-100 self-end ml-auto`
+                        ? `${selectedTheme.messageColor} text-gray-100 self-end ml-auto`
                         : "bg-gray-800/40 text-gray-100"
                     }`}
                   >
@@ -246,11 +271,11 @@ export default function Home() {
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className={`flex-1 p-2 border border-gray-800/50 bg-gray-800/20 rounded-lg placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 ${selectedThemeConfig.focusRing} focus:border-transparent transition-all`}
+                  className={`flex-1 p-2 border border-gray-800/50 bg-gray-800/20 rounded-lg placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 ${selectedTheme.focusRing} focus:border-transparent transition-all`}
                   placeholder="Type a message..."
                 />
                 <button
-                  className={`${selectedThemeConfig.buttonColor} text-gray-100 px-4 py-2 rounded-lg transition-all`}
+                  className={`${selectedTheme.buttonColor} text-gray-100 px-4 py-2 rounded-lg transition-all`}
                   onClick={handleSendMessage}
                 >
                   Send

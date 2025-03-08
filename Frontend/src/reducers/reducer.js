@@ -1,4 +1,5 @@
 const initialState = {
+    isAuthenticated: false,
     user: {
         name: 'John Doe',
         mobileNo: '123',
@@ -29,7 +30,8 @@ const reducer = (state = initialState, action) => {
         case 'SET_USER':
             return {
                 ...state,
-                user: action.user
+                user: action.user,
+                isAuthenticated: true
             }
 
         case 'SET_CHAT':
@@ -51,6 +53,12 @@ const reducer = (state = initialState, action) => {
                         }
                     ]
                 }
+            }
+        
+        case 'LOGOUT':
+            return {
+                ...state,
+                isAuthenticated: false
             }
 
         default:

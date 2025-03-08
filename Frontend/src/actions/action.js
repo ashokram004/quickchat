@@ -1,17 +1,23 @@
 import axios from "axios";
 
-export function setUserState(mobileNo) {
-    console.log("inside action")
-    return async (dispatch) => {
-        try {
-            const response = await axios.get(`http://localhost:8080/users/${mobileNo}`);
-            dispatch({
-                type: "SET_USER",
-                user: response.data
-            });
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
+// export function setUserState(mobileNo) {
+//     return async (dispatch) => {
+//         try {
+//             const response = await axios.get(`http://localhost:8080/users/${mobileNo}`);
+//             dispatch({
+//                 type: "SET_USER",
+//                 user: response.data
+//             });
+//         } catch (error) {
+//             console.error("Error fetching user data:", error);
+//         }
+//     };
+// }
+
+export function setUserState(user) {
+    return {
+        type: "SET_USER",
+        user
     };
 }
 
@@ -46,8 +52,12 @@ export function sendMessage(chatId, chatMessage, chat) {
 export function updateUserState(user) {
     return async (dispatch) => {
         try {
-            await axios.put(`http://localhost:8080/users/update/${user['mobileNo']}`, user);
-            dispatch(setUserState(user['mobileNo']));
+            const response = await axios.put(`http://localhost:8080/users/update/${user['mobileNo']}`, user);
+            if(response){
+                dispatch(setUserState(response.data));
+            }else{
+                console.error("Error updating user:", response.data);
+            }
         } catch (error) {
             console.error("Error updating user:", error);
         }
@@ -69,4 +79,10 @@ export function addTempChatUser(chatUser) {
         type: "ADD_TEMP_CHAT_USER",
         chatUser
     };
+}
+
+export function logOut() {
+    return {
+        type: "LOGOUT",
+    }
 }

@@ -23,20 +23,20 @@ public class UserService {
     }
 
     @Transactional
-    public String loginUser(String mobileNo, String password){
+    public User loginUser(String mobileNo, String password){
         User user = userRepository.findByMobileNo(mobileNo);
         if(user == null){
-            return "No user found with that Mobile number. Please Sign up first!";
+            return null;
         }
         String dbPass = user.getPassword();
         if(dbPass.equals(password)){
-            return "Login successful";
+            return user;
         }
-        return "Invalid password!";
+        return null;
     }
 
     @Transactional
-    public String updateUser(String mobileNo, User user){
+    public User updateUser(String mobileNo, User user){
         User dbUser = userRepository.findByMobileNo(mobileNo);
         if(dbUser != null){
             if(user.getName() != null) {
@@ -49,8 +49,8 @@ public class UserService {
                 dbUser.setPassword(user.getPassword());
             }
             userRepository.save(dbUser);
-            return "User updated successfully";
+            return dbUser;
         }
-        return "User not found. Bug Report! Shouldn't send update user request without registration.";
+        return null;
     }
 }

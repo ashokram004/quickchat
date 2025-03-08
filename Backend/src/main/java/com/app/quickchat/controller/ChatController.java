@@ -2,17 +2,13 @@ package com.app.quickchat.controller;
 
 import com.app.quickchat.model.Chat;
 import com.app.quickchat.model.ChatMessage;
-import com.app.quickchat.model.User;
 import com.app.quickchat.repository.ChatRepository;
 import com.app.quickchat.repository.UserRepository;
 import com.app.quickchat.service.ChatService;
 import com.app.quickchat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @RestController

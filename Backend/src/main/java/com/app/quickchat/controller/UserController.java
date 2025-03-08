@@ -28,13 +28,19 @@ public class UserController {
         return userRepository.findByMobileNo(mobileNo);
     }
 
-    @PostMapping("/add")
-    public String createUser(@RequestBody User user) {
+    @PostMapping("/login")
+    public User loginUser(@RequestBody User user) {
+        System.out.println("Got request for fetching user details: "+user.toString());
+        return userService.loginUser(user.getMobileNo(), user.getPassword());
+    }
+
+    @PostMapping("/register")
+    public String registerUser(@RequestBody User user) {
         return userService.registerUser(user);
     }
 
     @PutMapping("/update/{mobileNo}")
-    public String updateUser(@PathVariable String mobileNo, @RequestBody User user) {
+    public User updateUser(@PathVariable String mobileNo, @RequestBody User user) {
         return userService.updateUser(mobileNo, user);
     }
 }
