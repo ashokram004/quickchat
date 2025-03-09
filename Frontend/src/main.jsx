@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { thunk } from 'redux-thunk';
 import { Provider } from 'react-redux';
 import reducer from './Reducers/Reducer';
@@ -17,8 +17,8 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);
-
-const store = createStore(persistedReducer, applyMiddleware(thunk));
+const x = compose(applyMiddleware(thunk),  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const store = createStore(persistedReducer, x);
 const persistor = persistStore(store);
 
 createRoot(document.getElementById('root')).render(

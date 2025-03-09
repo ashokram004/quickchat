@@ -38,7 +38,7 @@ export function setChatState(chatId) {
 export function sendMessage(chatId, chatMessage, chat) {
     return async (dispatch) => {
         try {
-            if (chat == null) {
+            if (chat == null || chat == "") {
                 await dispatch(initiateChat(chatId));
             }
             await axios.post(`http://localhost:8080/chats/sendMessage/${chatId}`, chatMessage);

@@ -4,6 +4,8 @@ import themesList from './themes'
 import { useDispatch, useSelector } from "react-redux";
 import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser, logOut } from './actions/action';
 import { useNavigate } from "react-router";
+import { debounce } from "lodash";
+import axios from "axios";
 
 // Default human icon URL
 const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -24,7 +26,11 @@ export default function App() {
   const [tempTheme, setTempTheme] = useState(user.theme); // Temporary theme for editing
   const [profilePicture, setProfilePicture] = useState(DEFAULT_PROFILE_PICTURE); // Default profile picture
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Toggle theme dropdown
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]); // Stores fetched mobileNos
+  const [isSearching, setIsSearching] = useState(false);
   const messagesEndRef = useRef(null);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,9 +57,19 @@ export default function App() {
   };
 
   const handleSendMessage = () => {
+    if(newMessage == ""){
+      return;
+    }
     const chatMessage = {sender: user.mobileNo, message: newMessage, timestamp: new Date().toISOString()}
     dispatch(sendMessage(selectedUser.chatId, chatMessage, chat));
     setNewMessage("")
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   const handleSelectUser = (chatId) => {
@@ -84,6 +100,51 @@ export default function App() {
       reader.readAsDataURL(file);
     }
   };
+
+  const fetchUsers = debounce(async (query) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+  
+    setIsSearching(true);
+    try {
+      const response = await  axios.get("http://localhost:8080/users/search?mobileNo="+query);
+      if(response != ""){
+        const data = response.data.filter(m => m !== user.mobileNo);
+        setSearchResults(data); // Expected: array of { mobileNo }
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+    setIsSearching(false);
+  }, 300); 
+
+  // Update searchQuery state and trigger API fetch
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    fetchUsers(value);
+  };
+
+  const handleSelectUserFromSearch = (friendMobileNo) => {
+    // Check if user already exists in chat history
+    const existingChat = user.chatHistory.find(chat => chat.friendMobileNo === friendMobileNo);
+  
+    if (existingChat) {
+      // If already present, just select that user
+      setSelectedUser(existingChat);
+      handleSelectUser(existingChat.chatId);
+    } else {
+      // If new user, add temporary chat
+      addTemporaryUserChat(friendMobileNo);
+    }
+  
+    // Clear search results
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+  
 
   return (
     <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedTheme.gradient} animate-gradient`}>
@@ -206,10 +267,32 @@ export default function App() {
               {/* Search Bar */}
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search by mobile number..."
+                value={searchQuery}
+                onChange={handleSearchChange}
                 className="p-2 rounded-lg border border-gray-800/50 bg-gray-800/20 placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent transition-all mb-4"
               />
 
+              {/* Dynamic Search Results Dropdown */}
+              {searchQuery && (
+                <div className="absolute mt-1 w-full bg-gray-900/50 backdrop-blur-lg rounded-lg border border-gray-700/50">
+                  {isSearching ? (
+                    <div className="p-2 text-gray-300">Searching...</div>
+                  ) : searchResults.length > 0 ? (
+                    searchResults.map((mNo) => (
+                      <div
+                        key={mNo}
+                        className="p-2 cursor-pointer hover:bg-gray-700/50 text-gray-100 transition-all"
+                        onClick={() => handleSelectUserFromSearch(mNo)}
+                      >
+                        {mNo}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-2 text-gray-300">No users found</div>
+                  )}
+                </div>
+              )}
               {/* User List */}
               <div className="flex flex-col gap-2">
                 {user.chatHistory.map((friend) => (
@@ -271,6 +354,7 @@ export default function App() {
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className={`flex-1 p-2 border border-gray-800/50 bg-gray-800/20 rounded-lg placeholder-gray-400 text-gray-100 focus:outline-none focus:ring-2 ${selectedTheme.focusRing} focus:border-transparent transition-all`}
                   placeholder="Type a message..."
                 />

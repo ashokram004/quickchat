@@ -13,7 +13,7 @@ export default function Home() {
   });
   const [registerForm, setRegisterForm] = useState({
     mobileNo: "",
-    fullName: "",
+    name: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function Home() {
   const handleLogin = async () => {
     try {
       const response = await axios.post("http://localhost:8080/users/login", loginForm);
-      if (response.data != null) {
+      if (response.data != null && response.data != "") {
         dispatch(setUserState(response.data));
         navigate("/chat");
       } else {
@@ -131,16 +131,19 @@ export default function Home() {
                 type="text"
                 placeholder="Full Name"
                 className="w-full p-3 border-none rounded-md mb-3 bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-green-400"
+                value={registerForm.name} onChange={e => setRegisterForm({...registerForm, name: e.target.value})}
               />
               <input
                 type="tel"
                 placeholder="Phone Number"
                 className="w-full p-3 border-none rounded-md mb-3 bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-green-400"
+                value={registerForm.mobileNo} onChange={e => setRegisterForm({...registerForm, mobileNo: e.target.value})}
               />
               <input
                 type="password"
                 placeholder="Password"
                 className="w-full p-3 border-none rounded-md mb-4 bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-green-400"
+                value={registerForm.password} onChange={e => setRegisterForm({...registerForm, password: e.target.value})}
               />
               <button className="w-full bg-green-500 hover:bg-green-600 text-white p-3 rounded-md shadow-lg transition" onClick={handleRegister}>
                 Register

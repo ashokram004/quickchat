@@ -29,18 +29,21 @@ public class ChatController {
 
     @GetMapping("/fetchMessages/{chatId}")
     public Chat fetchMessages(@PathVariable String chatId) {
+        System.out.println("Got request for fetch chat details: " + chatId);
         Optional<Chat> opChat = chatRepository.findById(chatId);
         return opChat.orElse(null);
     }
 
     @PostMapping("/initiateChat/{chatId}")
     public String initiateChat(@PathVariable String chatId) {
+        System.out.println("Got request for initiate chat: " + chatId);
         chatService.initiateChat(chatId);
         return "Chat details created";
     }
 
     @PostMapping("/sendMessage/{chatId}")
     public String sendMessage(@PathVariable String chatId, @RequestBody ChatMessage chatMessage) {
+        System.out.println("Got request for sending message: " + chatMessage.toString());
         chatService.sendMessage(chatId, chatMessage);
         return "Message sent";
     }
