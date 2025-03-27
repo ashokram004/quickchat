@@ -4,6 +4,9 @@ import { useNavigate } from "react-router";
 import { setUserState } from "./actions/action";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,33 +28,43 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/users/login", loginForm);
-      if (response.data != null && response.data != "") {
-        dispatch(setUserState(response.data));
-        navigate("/chat");
-      } else {
-        console.error(response.data);
-      }
+        const response = await axios.post("http://localhost:8080/users/login", loginForm);
+
+        if (response.data.success) {
+            dispatch(setUserState(response.data.data)); // Store user data
+            toast.success("Logged in successfully! 🎉", { position: "top-center" });
+            setTimeout(() => navigate("/chat"), 1000);
+        } else {
+            toast.error(response.data.message || "Invalid credentials!", { position: "top-center" });
+            console.error("Login failed:", response.data.message);
+        }
     } catch (error) {
-      console.error("Login failed", error);
+        toast.error("Login failed. Please try again.", { position: "top-center" });
+        console.error("Login failed:", error);
     }
   };
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/users/register", registerForm);
-      if (response.data == "User added successfully") {
-        switchAuthMode();
-      } else {
-        console.error("Register failed", response.data);
-      }
+        const response = await axios.post("http://localhost:8080/users/register", registerForm);
+
+        if (response.data.success) {
+            toast.success("Registration successful! 🎉", { position: "top-center" });
+            setTimeout(() => switchAuthMode(), 1000);
+        } else {
+            toast.error(response.data.message || "Registration failed!", { position: "top-center" });
+            console.error("Registration failed:", response.data.message);
+        }
     } catch (error) {
-      console.error("Register failed", error);
+        toast.error("Registration failed. Please try again.", { position: "top-center" });
+        console.error("Registration failed:", error);
     }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#141E30] to-[#243B55] relative overflow-hidden">
+
+      <ToastContainer autoClose={2000} />
       {/* Moving Blobs */}
       <motion.div
         className="absolute top-[-50px] left-0 w-40 h-40 bg-blue-500 rounded-full filter blur-3xl opacity-40"

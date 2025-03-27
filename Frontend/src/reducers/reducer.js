@@ -34,11 +34,11 @@ const reducer = (state = initialState, action) => {
                 isAuthenticated: true
             }
 
-        case 'SET_CHAT':
+        case "SET_CHAT":
             return {
                 ...state,
-                chat: action.chat
-            }
+                chat: action.chat || state.chat, // Use existing chat if null
+            };
 
         case 'ADD_TEMP_CHAT_USER':
             return {
@@ -57,8 +57,29 @@ const reducer = (state = initialState, action) => {
         
         case 'LOGOUT':
             return {
-                ...state,
-                isAuthenticated: false
+                isAuthenticated: false,
+                user: {
+                    name: 'John Doe',
+                    mobileNo: '123',
+                    password: '123',
+                    theme: 'cyan',
+                    chatHistory: [
+                        {
+                            friendMobileNo: '456',
+                            chatId: '123.456'
+                        }
+                    ]
+                },
+                chat: {
+                    chatId: "123.456",
+                    chatMessages: [
+                        {
+                            sender: '123',
+                            message: 'hello reyyyy',
+                            timestamp: '2025-02-16T18:16:00.000+00:00'
+                        }
+                    ]
+                }
             }
 
         default:

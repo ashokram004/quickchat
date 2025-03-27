@@ -14,6 +14,7 @@ import storage from "redux-persist/lib/storage";
 const persistConfig = {
   key: "root", 
   storage, 
+  whitelist: ["isAuthenticated", "user", "chat"]
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);

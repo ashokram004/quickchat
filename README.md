@@ -52,10 +52,6 @@ quickchat/
 5. The server will start on `http://localhost:8080/`
 
 ## In Line
-- Proper logging in Backend
-- Return Response status and body from APIs and handle responses in frotend
-- Proper Exception handling in both frotend and backend
-- Logger popup to show logs in UI
 - Improve UI (like disabling scrollbar in chat window...)
 - Socket Messaging for realtime chatting
 - JWT for authentication

@@ -45,7 +45,7 @@ export default function App() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chat.chatMessages]);
+  }, [chat]);
 
   useEffect(() => {
     setSelectedTheme(themes[user.theme])
@@ -103,23 +103,27 @@ export default function App() {
 
   const fetchUsers = debounce(async (query) => {
     if (!query) {
-      setSearchResults([]);
-      return;
+        setSearchResults([]);
+        return;
     }
-  
+
     setIsSearching(true);
     try {
-      const response = await  axios.get("http://localhost:8080/users/search?mobileNo="+query);
-      if(response != ""){
-        const data = response.data.filter(m => m !== user.mobileNo);
-        setSearchResults(data); // Expected: array of { mobileNo }
-      }
+        const response = await axios.get(`http://localhost:8080/users/search?mobileNo=${query}`);
+
+        if (response.data.success) {
+            const data = response.data.data.filter(m => m !== user.mobileNo);
+            setSearchResults(data);
+        } else {
+            console.error("User search failed:", response.data.message);
+        }
     } catch (error) {
-      console.error("Error fetching users:", error);
+        console.error("Error fetching users:", error);
     }
     setIsSearching(false);
-  }, 300); 
-
+  }, 300);
+  
+  
   // Update searchQuery state and trigger API fetch
   const handleSearchChange = (e) => {
     const value = e.target.value;

@@ -3,6 +3,9 @@ package com.app.quickchat.controller;
 import com.app.quickchat.model.User;
 import com.app.quickchat.repository.UserRepository;
 import com.app.quickchat.service.UserService;
+import com.app.quickchat.model.ResponseDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -18,41 +23,56 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseDTO<List<User>> getAllUsers() {
+        logger.info("Fetching all users");
+        List<User> users = userRepository.findAll();
+        return new ResponseDTO<>(true, "Users retrieved successfully", users);
     }
 
     @GetMapping("/{mobileNo}")
-    public User getUserByMobileNo(@PathVariable String mobileNo) {
-        System.out.println("Got request for fetching user details: "+mobileNo);
-        return userRepository.findByMobileNo(mobileNo);
+    public ResponseDTO<User> getUserByMobileNo(@PathVariable String mobileNo) {
+        logger.info("Fetching user details for mobile number: {}", mobileNo);
+        User user = userRepository.findByMobileNo(mobileNo);
+        if (user == null) {
+            return new ResponseDTO<>(false, "User not found", null);
+        }
+        return new ResponseDTO<>(true, "User found", user);
     }
 
     @GetMapping("/search")
-    public List<String> getUserMobileNosByQuery(@RequestParam String mobileNo) {
-        System.out.println("Got request for fetching user details: " + mobileNo);
+    public ResponseDTO<List<String>> getUserMobileNosByQuery(@RequestParam String mobileNo) {
+        logger.info("Searching users with mobile prefix: {}", mobileNo);
         List<String> mobileNos = userService.searchUserMobileNosByPrefix(mobileNo);
         if (mobileNos.isEmpty()) {
-            return null;
+            return new ResponseDTO<>(false, "No users found", null);
         }
-        return mobileNos;
+        return new ResponseDTO<>(true, "Users found", mobileNos);
     }
 
     @PostMapping("/login")
-    public User loginUser(@RequestBody User user) {
-        System.out.println("Got request for login user: "+user.toString());
-        return userService.loginUser(user.getMobileNo(), user.getPassword());
+    public ResponseDTO<User> loginUser(@RequestBody User user) {
+        logger.info("Login request for mobile number: {}", user.getMobileNo());
+        User loggedInUser = userService.loginUser(user.getMobileNo(), user.getPassword());
+        if (loggedInUser == null) {
+            return new ResponseDTO<>(false, "Invalid credentials", null);
+        }
+        return new ResponseDTO<>(true, "Login successful", loggedInUser);
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
-        System.out.println("Got request for register user details: " + user.toString());
-        return userService.registerUser(user);
+    public ResponseDTO<String> registerUser(@RequestBody User user) {
+        logger.info("Register request for mobile number: {}", user.getMobileNo());
+        String result = userService.registerUser(user);
+        return new ResponseDTO<>(true, result, null);
     }
 
     @PutMapping("/update/{mobileNo}")
-    public User updateUser(@PathVariable String mobileNo, @RequestBody User user) {
-        System.out.println("Got request for update user details: " + user.toString());
-        return userService.updateUser(mobileNo, user);
+    public ResponseDTO<User> updateUser(@PathVariable String mobileNo, @RequestBody User user) {
+        logger.info("Updating user details for mobile number: {}", mobileNo);
+        User updatedUser = userService.updateUser(mobileNo, user);
+        if (updatedUser == null) {
+            return new ResponseDTO<>(false, "User update failed", null);
+        }
+        return new ResponseDTO<>(true, "User updated successfully", updatedUser);
     }
 }

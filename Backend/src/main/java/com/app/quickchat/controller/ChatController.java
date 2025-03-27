@@ -3,9 +3,10 @@ package com.app.quickchat.controller;
 import com.app.quickchat.model.Chat;
 import com.app.quickchat.model.ChatMessage;
 import com.app.quickchat.repository.ChatRepository;
-import com.app.quickchat.repository.UserRepository;
 import com.app.quickchat.service.ChatService;
-import com.app.quickchat.service.UserService;
+import com.app.quickchat.model.ResponseDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,36 +16,35 @@ import java.util.Optional;
 @RequestMapping("/chats")
 public class ChatController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
     private ChatRepository chatRepository;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private ChatService chatService;
 
     @GetMapping("/fetchMessages/{chatId}")
-    public Chat fetchMessages(@PathVariable String chatId) {
-        System.out.println("Got request for fetch chat details: " + chatId);
+    public ResponseDTO<Chat> fetchMessages(@PathVariable String chatId) {
+        logger.info("Fetching chat details for chat ID: {}", chatId);
         Optional<Chat> opChat = chatRepository.findById(chatId);
-        return opChat.orElse(null);
+        if (opChat.isPresent()) {
+            return new ResponseDTO<>(true, "Chat retrieved successfully", opChat.get());
+        }
+        return new ResponseDTO<>(false, "Chat not found", null);
     }
 
     @PostMapping("/initiateChat/{chatId}")
-    public String initiateChat(@PathVariable String chatId) {
-        System.out.println("Got request for initiate chat: " + chatId);
+    public ResponseDTO<String> initiateChat(@PathVariable String chatId) {
+        logger.info("Initiating chat for chat ID: {}", chatId);
         chatService.initiateChat(chatId);
-        return "Chat details created";
+        return new ResponseDTO<>(true, "Chat initiated successfully", null);
     }
 
     @PostMapping("/sendMessage/{chatId}")
-    public String sendMessage(@PathVariable String chatId, @RequestBody ChatMessage chatMessage) {
-        System.out.println("Got request for sending message: " + chatMessage.toString());
+    public ResponseDTO<String> sendMessage(@PathVariable String chatId, @RequestBody ChatMessage chatMessage) {
+        logger.info("Sending message to chat ID: {} - Message: {}", chatId, chatMessage.getMessage());
         chatService.sendMessage(chatId, chatMessage);
-        return "Message sent";
+        return new ResponseDTO<>(true, "Message sent successfully", null);
     }
 }
