@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
 import { setUserState } from "./actions/action";
@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
+  const isAuthenticated = useSelector((state) => state.isAuthenticated);
   const [loginForm, setLoginForm] = useState({
     mobileNo: "",
     password: "",
@@ -21,6 +22,12 @@ export default function Home() {
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/chat");
+    }
+  }, [isAuthenticated])
 
   const switchAuthMode = () => {
     setIsLogin((prev) => !prev);

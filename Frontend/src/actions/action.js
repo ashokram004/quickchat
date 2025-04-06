@@ -1,4 +1,5 @@
 import axios from "axios";
+import { connectWebSocket, sendMessage as sendMessageSocket } from '../utils/websocket';
 
 // export function setUserState(mobileNo) {
 //     return async (dispatch) => {
@@ -13,6 +14,7 @@ import axios from "axios";
 //         }
 //     };
 // }
+
 
 export function setUserState(user) {
     return {
@@ -53,29 +55,33 @@ export function setChatState(chatId) {
 }
 
 export function sendMessage(chatId, chatMessage, chat) {
+    chatMessage = {...chatMessage, chatId: chatId}
     return async (dispatch) => {
-        try {
-            console.log(chat.chatMessages)
-            if (chat == null || chat == "" || chat.chatMessages.length == 0) {
-                const initResponse = await dispatch(initiateChat(chatId));
-                if (!initResponse || !initResponse.success) {
-                    console.error("Failed to initiate chat:", initResponse?.message);
-                    return; // Stop execution if chat initiation fails
-                }
-            }
-
-            const response = await axios.post(`http://localhost:8080/chats/sendMessage/${chatId}`, chatMessage);
-            console.log(response.data)
-            if (response.data.success) {
-                dispatch(setChatState(chatId)); // Refresh chat only if message sent successfully
-            } else {
-                console.error("Failed to send message:", response.data.message);
-            }
-        } catch (error) {
-            console.error("Error sending message:", error);
+      try {
+        // If chat is not initialized, try to initiate it first.
+        if (!chat || !chat.chatMessages || chat.chatMessages.length === 0) {
+          const initResponse = await dispatch(initiateChat(chatId));
+          if (!initResponse || !initResponse.success) {
+            console.error("Failed to initiate chat:", initResponse?.message);
+            return; // Stop execution if chat initiation fails
+          }
         }
+
+        // Send the message via WebSocket
+        sendMessageSocket(chatId, chatMessage);
+
+      } catch (error) {
+        console.error("Error sending message. So sending through Rest", error);
+        const response = await axios.post(`http://localhost:8080/chats/sendMessage/${chatId}`, chatMessage);
+        if (response.data.success) {
+        dispatch(setChatState(chatId));
+        } else {
+        console.error("Failed to send message via REST:", response.data.message);
+        }
+      }
     };
 }
+  
 
 export function updateUserState(user) {
     return async (dispatch) => {

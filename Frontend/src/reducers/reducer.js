@@ -55,6 +55,15 @@ const reducer = (state = initialState, action) => {
                 }
             }
         
+        case 'ADD_MESSAGE':
+            return {
+                ...state,
+                chat: {
+                    ...state.chat,
+                    chatMessages: [...state.chat.chatMessages, action.message],
+                },
+            };
+        
         case 'LOGOUT':
             return {
                 isAuthenticated: false,

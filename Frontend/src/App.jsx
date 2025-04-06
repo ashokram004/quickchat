@@ -2,10 +2,12 @@
 import { useState, useEffect, useRef } from "react";
 import themesList from './themes'
 import { useDispatch, useSelector } from "react-redux";
-import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser, logOut } from './actions/action';
+import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUser, logOut} from './actions/action';
+import { connectWebSocket, sendMessage as sendMessageSocket, stompClient } from './utils/websocket';
 import { useNavigate } from "react-router";
 import { debounce } from "lodash";
 import axios from "axios";
+import "./app.css"
 
 // Default human icon URL
 const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -42,6 +44,25 @@ export default function App() {
   }, [isAuthenticated])
 
   useEffect(() => {
+    const unsubscribe = connectWebSocket(
+      chat.chatId,
+      (message) => {
+          if (message.chatId === chat.chatId) {
+              dispatch({ type: "ADD_MESSAGE", message });
+          } else {
+              console.log("New notification ----------------------- .");
+          }
+      }
+    );
+
+    // Cleanup the subscription when chat.chatId changes
+    return () => {
+        if (unsubscribe) unsubscribe();
+    };
+  }, [chat.chatId]);
+
+  useEffect(() => {
+    console.log(chat)
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
