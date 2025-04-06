@@ -6,6 +6,8 @@ import { setChatState, setUserState, sendMessage, updateUserState, addTempChatUs
 import { connectWebSocket, sendMessage as sendMessageSocket, stompClient } from './utils/websocket';
 import { useNavigate } from "react-router";
 import { debounce } from "lodash";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./app.css"
 
@@ -50,7 +52,8 @@ export default function App() {
           if (message.chatId === chat.chatId) {
               dispatch({ type: "ADD_MESSAGE", message });
           } else {
-              console.log("New notification ----------------------- .");
+              toast.success("You recieved a new message from " + message.sender, { position: "top-center" });
+              console.log("New notification recieved.");
           }
       }
     );
@@ -173,6 +176,7 @@ export default function App() {
 
   return (
     <div className={`flex h-screen w-full items-center justify-center bg-gradient-to-br ${selectedTheme.gradient} animate-gradient`}>
+      <ToastContainer autoClose={2000} />
       <div className="flex h-[90%] w-[90%] md:w-[80%] bg-gray-900/30 backdrop-blur-lg shadow-2xl rounded-2xl overflow-hidden border border-gray-800/50">
         {/* Sidebar */}
         <div className="w-1/3 bg-gray-900/20 p-4 border-r border-gray-800/50 flex flex-col relative">
