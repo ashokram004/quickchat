@@ -52,13 +52,11 @@ quickchat/
 5. The server will start on `http://localhost:8080/`
 
 ## In Line
-- Improve UI (like disabling scrollbar in chat window...)
-- Socket Messaging for realtime chatting
 - JWT for authentication
 
 ## Future Enhancements
 - User presence status (online/offline)
-- Message read receipts
+- Message read receipts/ New unread messages symbol from chat list
 - Deployment to cloud infrastructure
 - AI addition
 
