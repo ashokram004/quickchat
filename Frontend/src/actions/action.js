@@ -38,6 +38,7 @@ export function setChatState(chatId) {
                 dispatch({
                     type: "SET_CHAT",
                     chat: {
+                        chatId,
                         chatMessages: []
                     }
                 });

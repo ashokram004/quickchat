@@ -4,6 +4,7 @@
 QuickChat is a powerful, real-time chat application designed to provide users with seamless communication. Built with **Spring Boot** for the backend, **MongoDB** as the database, and leveraging **JWT-based authentication** for secure login, it delivers fast and scalable messaging capabilities. The app incorporates **WebSockets** for real-time communication, allowing users to stay connected with minimal delay.
 
 ## Tech Stack
+- **Frontend:** ReactJs, Vite
 - **Backend:** Spring Boot (Gradle 8)
 - **Database:** MongoDB
 - **Authentication:** JWT-based authentication
@@ -14,7 +15,7 @@ QuickChat is a powerful, real-time chat application designed to provide users wi
 
 ## Features
 - 🔐 **Secure Authentication with JWT**  
-    Robust user authentication with JSON Web Tokens (JWT), ensuring secure, stateless sessions for all users.
+    Robust user authentication with JSON Web Tokens (JWT) and encrypted passwords, ensuring secure, stateless sessions for all users.
 
 - 💬 **Real-Time Messaging with WebSockets**  
     Instant, bidirectional messaging using WebSockets for seamless real-time communication between users.
@@ -197,6 +198,9 @@ quickchat/
 
 
 ## Future Enhancements
+- 🟢 **Password Reset (LOL)**  
+    Provide password reset option incase of forgot password.
+
 - 🟢 **User Presence Status**  
     Display user status (online/offline) in the chat interface.
 

@@ -3,6 +3,7 @@ package com.app.quickchat.service;
 import com.app.quickchat.model.User;
 import com.app.quickchat.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory; // Import SLF4J Logger
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,10 @@ public class UserService {
 
         User dbUser = userRepository.findByMobileNo(user.getMobileNo());
         if (dbUser == null) {
+            // Hash the password using BCrypt
+            String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+            user.setPassword(hashedPassword);
+
             user.setChatHistory(new ArrayList<>());
             user.setTheme("cyan");
             userRepository.save(user);
@@ -49,7 +54,7 @@ public class UserService {
             return null;
         }
 
-        if (user.getPassword().equals(password)) {
+        if (BCrypt.checkpw(password, user.getPassword())) {
             logger.info("Login successful for user: {}", mobileNo);
             return user;
         }

@@ -110,7 +110,7 @@ export default function App() {
     dispatch(addTempChatUser({chatId, friendMobileNo}))
     setTimeout(() => {
       handleSelectUser(chatId);
-    }, 0);
+    }, 10);
   }
 
   const handleProfilePictureChange = (e) => {

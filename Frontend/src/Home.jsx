@@ -1,9 +1,8 @@
 import { useState,useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
-import { setUserState } from "./actions/action";
 import { useDispatch, useSelector } from "react-redux";
-import api from "./api";
+import bcrypt from "bcryptjs";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
