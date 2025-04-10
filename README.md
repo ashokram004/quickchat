@@ -1,4 +1,3 @@
-```markdown
 # QuickChat - A Real-time Chat Application
 
 ## Overview
@@ -142,4 +141,3 @@ quickchat/
 
 ## License
 This project is yet to be licensed.
-```
