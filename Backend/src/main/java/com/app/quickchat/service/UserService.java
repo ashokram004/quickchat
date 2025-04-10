@@ -59,6 +59,19 @@ public class UserService {
     }
 
     @Transactional
+    public User getUser(String mobileNo) {
+        logger.info("Searching for user with mobile number: {}", mobileNo);
+
+        User user = userRepository.findByMobileNo(mobileNo);
+        if (user == null) {
+            logger.warn("No user found with mobile number {}", mobileNo);
+            return null;
+        }
+        logger.info("Search successful for user: {}", mobileNo);
+        return user;
+    }
+
+    @Transactional
     public User updateUser(String mobileNo, User user) {
         logger.info("Updating user with mobile number: {}", mobileNo);
 

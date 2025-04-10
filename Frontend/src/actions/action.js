@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from '../api';
 import { connectWebSocket, sendMessage as sendMessageSocket } from '../utils/websocket';
 
 // export function setUserState(mobileNo) {
 //     return async (dispatch) => {
 //         try {
-//             const response = await axios.get(`http://localhost:8080/users/${mobileNo}`);
+//             const response = await api.get(`/users/${mobileNo}`);
 //             dispatch({
 //                 type: "SET_USER",
 //                 user: response.data
@@ -26,7 +26,7 @@ export function setUserState(user) {
 export function setChatState(chatId) {
     return async (dispatch) => {
         try {
-            const response = await axios.get(`http://localhost:8080/chats/fetchMessages/${chatId}`);
+            const response = await api.get(`/chats/fetchMessages/${chatId}`);
 
             if (response.data.success) {
                 dispatch({
@@ -72,7 +72,7 @@ export function sendMessage(chatId, chatMessage, chat) {
 
       } catch (error) {
         console.error("Error sending message. So sending through Rest", error);
-        const response = await axios.post(`http://localhost:8080/chats/sendMessage/${chatId}`, chatMessage);
+        const response = await api.post(`/chats/sendMessage/${chatId}`, chatMessage);
         if (response.data.success) {
         dispatch(setChatState(chatId));
         } else {
@@ -86,7 +86,7 @@ export function sendMessage(chatId, chatMessage, chat) {
 export function updateUserState(user) {
     return async (dispatch) => {
         try {
-            const response = await axios.put(`http://localhost:8080/users/update/${user.mobileNo}`, user);
+            const response = await api.put(`/users/update/${user.mobileNo}`, user);
 
             if (response.data.success) {
                 dispatch(setUserState(response.data.data));
@@ -106,7 +106,7 @@ export function updateUserState(user) {
 export function initiateChat(chatId) {
     return async (dispatch) => {
         try {
-            const response = await axios.post(`http://localhost:8080/chats/initiateChat/${chatId}`);
+            const response = await api.post(`/chats/initiateChat/${chatId}`);
 
             if (response.data.success) {
                 console.log("Chat initiated successfully:", response.data.message);

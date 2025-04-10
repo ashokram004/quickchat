@@ -1,5 +1,6 @@
 package com.app.quickchat.controller;
 
+import com.app.quickchat.config.JWTConfig;
 import com.app.quickchat.model.User;
 import com.app.quickchat.repository.UserRepository;
 import com.app.quickchat.service.UserService;
@@ -8,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -21,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JWTConfig jwtConfig;
 
     @GetMapping
     public ResponseDTO<List<User>> getAllUsers() {
@@ -50,13 +57,20 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseDTO<User> loginUser(@RequestBody User user) {
+    public ResponseDTO<Map<String, Object>> loginUser(@RequestBody User user) {
         logger.info("Login request for mobile number: {}", user.getMobileNo());
         User loggedInUser = userService.loginUser(user.getMobileNo(), user.getPassword());
         if (loggedInUser == null) {
             return new ResponseDTO<>(false, "Invalid credentials", null);
         }
-        return new ResponseDTO<>(true, "Login successful", loggedInUser);
+        // Generate JWT token
+        String token = jwtConfig.generateToken(loggedInUser.getMobileNo());
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("token", token);
+        responseData.put("user", loggedInUser);
+
+        return new ResponseDTO<>(true, "Login successful", responseData);
     }
 
     @PostMapping("/register")

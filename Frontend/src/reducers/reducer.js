@@ -12,6 +12,7 @@ const initialState = {
             }
         ]
     },
+    token: null,
     chat: {
         chatId: "123.456",
         chatMessages: [
@@ -27,6 +28,14 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
+        case 'SET_AUTH':
+            return {
+                ...state,
+                isAuthenticated: true,
+                user: action.payload.user,
+                token: action.payload.token, // Store token
+            }
+
         case 'SET_USER':
             return {
                 ...state,
@@ -67,6 +76,7 @@ const reducer = (state = initialState, action) => {
         case 'LOGOUT':
             return {
                 isAuthenticated: false,
+                token: null,
                 user: {
                     name: 'John Doe',
                     mobileNo: '123',

@@ -14,12 +14,12 @@ import storage from "redux-persist/lib/storage";
 const persistConfig = {
   key: "root", 
   storage, 
-  whitelist: ["isAuthenticated", "user", "chat"]
+  whitelist: ["isAuthenticated", "user", "chat", "token"]
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 const x = compose(applyMiddleware(thunk),  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-const store = createStore(persistedReducer, x);
+export const store = createStore(persistedReducer, x);
 const persistor = persistStore(store);
 
 createRoot(document.getElementById('root')).render(

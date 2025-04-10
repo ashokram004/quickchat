@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
 import { setUserState } from "./actions/action";
 import { useDispatch, useSelector } from "react-redux";
+import api from "./api";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,7 +39,12 @@ export default function Home() {
         const response = await axios.post("http://localhost:8080/users/login", loginForm);
 
         if (response.data.success) {
-            dispatch(setUserState(response.data.data)); // Store user data
+            const { token, user } = response.data.data;
+            dispatch({
+              type: "SET_AUTH",
+              payload: { user, token },
+            });
+            
             toast.success("Logged in successfully! 🎉", { position: "top-center" });
             setTimeout(() => navigate("/chat"), 1000);
         } else {

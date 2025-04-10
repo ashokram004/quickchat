@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 import { debounce } from "lodash";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import api from "./api";
 import "./app.css"
 
 // Default human icon URL
@@ -65,9 +65,8 @@ export default function App() {
   }, [chat.chatId]);
 
   useEffect(() => {
-    console.log(chat)
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [chat]);
 
@@ -133,7 +132,7 @@ export default function App() {
 
     setIsSearching(true);
     try {
-        const response = await axios.get(`http://localhost:8080/users/search?mobileNo=${query}`);
+        const response = await api.get(`/users/search?mobileNo=${query}`);
 
         if (response.data.success) {
             const data = response.data.data.filter(m => m !== user.mobileNo);
