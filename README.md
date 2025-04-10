@@ -114,17 +114,87 @@ quickchat/
 4. The frontend will start on `http://localhost:3000/`.
 
 ## API Endpoints
+
+### **User Controller**
+
+- **GET /users**  
+    Retrieve all users from the system.  
+    **Response:**  
+    A list of all users.
+
+- **GET /users/{mobileNo}**  
+    Retrieve a specific user by their mobile number.  
+    **Path Parameter:**  
+    `mobileNo` - The mobile number of the user to retrieve.  
+    **Response:**  
+    Details of the user with the specified mobile number.
+
+- **GET /users/search**  
+    Search for users based on a mobile number prefix.  
+    **Request Parameter:**  
+    `mobileNo` - The mobile number prefix to search for.  
+    **Response:**  
+    A list of mobile numbers matching the search prefix.
+
 - **POST /users/login**  
-    User login with JWT authentication.
+    User login with JWT authentication.  
+    **Request Body:**  
+    `User` - The user's mobile number and password.  
+    **Response:**  
+    A JWT token and the user data upon successful login.
 
 - **POST /users/register**  
-    User registration for creating a new account.
+    User registration for creating a new account.  
+    **Request Body:**  
+    `User` - The user’s mobile number, name, and password.  
+    **Response:**  
+    A success message and user creation status.
 
-- **GET /chats/{chatId}**  
-    Retrieve messages from a specific chat.
+- **PUT /users/update/{mobileNo}**  
+    Update user details for a given mobile number.  
+    **Path Parameter:**  
+    `mobileNo` - The mobile number of the user to update.  
+    **Request Body:**  
+    `User` - The updated user details.  
+    **Response:**  
+    Updated user details upon successful update.
+
+---
+
+### **Chat Controller**
+
+- **GET /chats/fetchMessages/{chatId}**  
+    Retrieve messages from a specific chat.  
+    **Path Parameter:**  
+    `chatId` - The ID of the chat to fetch messages from.  
+    **Response:**  
+    A list of messages in the chat.
+
+- **POST /chats/initiateChat/{chatId}**  
+    Initiate a new chat with the given `chatId`.  
+    **Path Parameter:**  
+    `chatId` - The ID of the chat to initiate.  
+    **Response:**  
+    Success message upon successful chat initiation.
 
 - **POST /chats/sendMessage/{chatId}**  
-    Send a message to a specified chat.
+    Send a message to a specific chat.  
+    **Path Parameter:**  
+    `chatId` - The ID of the chat to send the message to.  
+    **Request Body:**  
+    `ChatMessage` - The message to send.  
+    **Response:**  
+    Success message upon successful message sending.
+
+- **MessageMapping /app/sendMessage/{chatId}**  
+    WebSocket endpoint for sending messages from the client.  
+    **Path Parameter:**  
+    `chatId` - The ID of the chat to send the message to.  
+    **Request Body:**  
+    `ChatMessage` - The message to send.  
+    **Response:**  
+    The message sent to the chat.
+
 
 ## Future Enhancements
 - 🟢 **User Presence Status**  
