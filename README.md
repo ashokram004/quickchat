@@ -29,6 +29,9 @@ QuickChat is a powerful, real-time chat application designed to provide users wi
 - 🎨 **Modern UI with Tailwind CSS & Framer Motion**  
     A sleek and responsive user interface built with Tailwind CSS and smooth transitions powered by Framer Motion.
 
+- 🌈 **Theme Customization**  
+    Personalize your chat experience with multiple built-in color schemes and themes to match user preferences.
+
 - 📦 **Fallback Message Delivery**  
     A REST API fallback mechanism ensures that messages are still delivered if the WebSocket connection is temporarily unavailable.
 
