@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "./api";
 import "./app.css"
+import { Scrollbar } from "react-scrollbars-custom";
 
 // Default human icon URL
 const DEFAULT_PROFILE_PICTURE = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -359,22 +360,80 @@ export default function App() {
               </div>
 
               {/* Chat Messages */}
-              <div id="chat-messages" className="flex-1 p-4 overflow-y-auto hide-scrollbar">
-                {chat.chatMessages?.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 my-2 w-fit max-w-xs rounded-lg animate-message ${
-                      msg.sender === user.mobileNo
-                        ? `${selectedTheme.messageColor} text-gray-100 self-end ml-auto`
-                        : "bg-gray-800/40 text-gray-100"
-                    }`}
-                  >
-                    <span>{msg.message}</span>
-                  </div>
-                ))}
-                {/* Invisible div to ensure scrolling to bottom */}
-                <div ref={messagesEndRef} />
-              </div>
+              <Scrollbar
+                style={{
+                  height: "100%",
+                  width: "100%",
+                }}
+                trackYProps={{
+                  style: {
+                    width: "6px", // Thin scrollbar
+                    backgroundColor: `${selectedTheme.gradient}33`, // Lighter shade of gradient (33 = 20% opacity)
+                  },
+                }}
+                thumbYProps={{
+                  style: {
+                    backgroundColor: selectedTheme.accent, // Use accent color for the thumb
+                    borderRadius: "10px", // Rounded edges
+                  },
+                }}
+              >
+                <div id="chat-messages" className="flex-1 p-4">
+                  {chat.chatMessages?.map((msg, index) => {
+                    // Get the current message's timestamp
+                    const currentTimestamp = new Date(msg.timestamp);
+
+                    // Convert to IST manually
+                    const utcOffset = currentTimestamp.getTimezoneOffset() * 60000; // Offset in milliseconds
+                    const istTimestamp = new Date(currentTimestamp.getTime() + utcOffset + 19800000); // Add 5 hours 30 minutes (19800000 ms)
+
+                    // Format time
+                    const currentTime = istTimestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+
+                    // Format date if it's not the current date
+                    const isToday = new Date().toLocaleDateString() === istTimestamp.toLocaleDateString();
+                    const formattedDate = isToday
+                      ? currentTime
+                      : `${istTimestamp.toLocaleDateString()} ${currentTime}`;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex flex-col ${
+                          msg.sender === user.mobileNo ? "items-end" : "items-start"
+                        } my-2`}
+                      >
+                        {/* Message Bubble */}
+                        <div
+                          className={`relative p-3 max-w-xs rounded-lg shadow-md ${
+                            msg.sender === user.mobileNo
+                              ? `${selectedTheme.messageColor} text-white self-end`
+                              : "bg-gray-800/40 text-gray-100"
+                          }`}
+                        >
+                          <span>{msg.message}</span>
+                        </div>
+
+                        {/* Timestamp */}
+                        <span
+                          className={`text-[10px] mt-1 ${
+                            msg.sender === user.mobileNo
+                              ? `${selectedTheme.timestampColor || "text-gray-300"}`
+                              : "text-gray-300"
+                          }`}
+                        >
+                          {formattedDate}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {/* Invisible div to ensure scrolling to bottom */}
+                  <div ref={messagesEndRef} />
+                </div>
+              </Scrollbar>
 
               {/* Message Input */}
               <div className="p-4 border-t border-gray-800/50 flex gap-2 bg-gray-900/20">

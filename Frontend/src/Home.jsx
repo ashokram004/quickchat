@@ -146,7 +146,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl font-bold text-white text-center mb-4">
-                Create an Account 🚀
+                Create an Account
               </h2>
               <p className="text-gray-300 text-sm text-center mb-6">
                 Join QuickChat and start chatting instantly.

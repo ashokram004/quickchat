@@ -1,5 +1,6 @@
 import axios from "axios";
 import { store } from "./main"; // Import your Redux store
+import { logOut } from "./actions/action";
 
 // Create an Axios instance
 const api = axios.create({
@@ -32,7 +33,7 @@ api.interceptors.response.use(
         console.error("Token expired or unauthorized:", error.response.data);
   
         // Dispatch logout action to clear Redux state
-        store.dispatch(logout());
+        store.dispatch(logOut());
 
         // Optionally, show a message to the user
         alert("Your session has expired. Please log in again.");

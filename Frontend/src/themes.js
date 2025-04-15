@@ -14,11 +14,11 @@ const themesList = {
       focusRing: "focus:ring-red-500/50",
     },
     yellow: {
-      gradient: "from-amber-900 via-orange-800 to-yellow-900",
+      gradient: "from-amber-500 via-yellow-500 to-yellow-700",
       accent: "yellow",
-      messageColor: "bg-yellow-600",
-      buttonColor: "bg-yellow-600 hover:bg-yellow-700",
-      focusRing: "focus:ring-yellow-500/50",
+      messageColor: "bg-yellow-500",
+      buttonColor: "bg-yellow-400 hover:bg-yellow-700",
+      focusRing: "focus:ring-yellow-400/50",
     },
     blue: {
       gradient: "from-indigo-900 via-blue-800 to-cyan-900",
