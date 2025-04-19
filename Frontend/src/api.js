@@ -28,15 +28,15 @@ api.interceptors.response.use(
       return response; // Return the response if successful
     },
     (error) => {
-      if (error.response && error.response.status === 401) {
+      if (error.response) {
         // Token has expired or is invalid
-        console.error("Token expired or unauthorized:", error.response.data);
+        console.error("Request failed with error:", error.response.data);
   
         // Dispatch logout action to clear Redux state
         store.dispatch(logOut());
 
         // Optionally, show a message to the user
-        alert("Your session has expired. Please log in again.");
+        alert("Our systems are under maintenance. Please log in after some time.");
       }
       return Promise.reject(error); // Reject the error for further handling
     }

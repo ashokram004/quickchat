@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quickchat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quickchat
+  template:
+    metadata:
+      labels:
+        app: quickchat
+    spec:
+      containers:
+        - name: quickchat
+          image: quickchat-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATA_MONGODB_URI
+              value: mongodb://host.docker.internal:27017/quickchat
+
