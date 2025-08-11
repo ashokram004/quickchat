@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/login", "/users/register", "/ws/**", "/topic/**", "/app/**").permitAll() // Allow public endpoints
+                        .requestMatchers("/dynamo/users/login", "/dynamo/users/register", "/ws/**", "/topic/**", "/app/**").permitAll() // Allow public endpoints
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter

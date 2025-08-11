@@ -35,7 +35,7 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-        const response = await axios.post("http://localhost:8080/users/login", loginForm);
+        const response = await axios.post("http://localhost:8080/dynamo/users/login", loginForm);
 
         if (response.data.success) {
             const { token, user } = response.data.data;
@@ -58,7 +58,7 @@ export default function Home() {
 
   const handleRegister = async () => {
     try {
-        const response = await axios.post("http://localhost:8080/users/register", registerForm);
+        const response = await axios.post("http://localhost:8080/dynamo/users/register", registerForm);
 
         if (response.data.success) {
             toast.success("Registration successful! 🎉", { position: "top-center" });

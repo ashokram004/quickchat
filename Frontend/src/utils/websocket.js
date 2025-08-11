@@ -32,7 +32,7 @@ export const connectWebSocket = (chatId, onMessageReceived) => {
 export const sendMessage = (chatId, message) => {
     if (stompClient && stompClient.connected) {
         stompClient.publish({
-            destination: `/app/sendMessage/${chatId}`,
+            destination: `/app/dynamo/sendMessage/${chatId}`,
             body: JSON.stringify(message),
         });
     }
