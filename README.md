@@ -3,6 +3,11 @@
 ## Overview
 QuickChat is a powerful, real-time chat application designed to provide users with seamless communication. Built with **Spring Boot** for the backend, **MongoDB** as the database, and leveraging **JWT-based authentication** for secure login, it delivers fast and scalable messaging capabilities. The app incorporates **WebSockets** for real-time communication, allowing users to stay connected with minimal delay.
 
+## High Level Architecture
+
+<img width="978" height="481" alt="QuickChat" src="https://github.com/user-attachments/assets/2bf1042a-117e-415e-9c62-278f6e2c0801" />
+
+
 ## Tech Stack
 - **Frontend:** ReactJs, Vite
 - **Backend:** Spring Boot (Gradle 8)
