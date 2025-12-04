@@ -206,8 +206,6 @@ quickchat/
 
 
 ## Future Enhancements
-- 🟢 **Password Reset (LOL)**  
-    Provide password reset option incase of forgot password.
 
 - 🟢 **User Presence Status**  
     Display user status (online/offline) in the chat interface.
